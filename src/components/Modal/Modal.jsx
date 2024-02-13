@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import css from "./Modal.module.css";
 
 class Modal extends Component {
@@ -6,6 +7,12 @@ class Modal extends Component {
         src: "",
         alt: "",
         onClick: () => {},
+    }
+
+    static propTypes = {
+        src: PropTypes.string.isRequired,
+        alt: PropTypes.string.isRequired,
+        onClick: PropTypes.func.isRequired,
     }
 
     render() {

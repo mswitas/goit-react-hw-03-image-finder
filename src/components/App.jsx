@@ -7,6 +7,7 @@ import Error from "./Error/Error";
 import Button from "./Button/Button";
 import css from "./App.module.css";
 import Modal from "./Modal/Modal";
+import NoResults from "./NoResults/NoResults";
 
 axios.defaults.baseURL = "https://pixabay.com/api/";
 const key = "6950737-29a0d5130824bfea54194711c";
@@ -42,7 +43,7 @@ class App extends Component {
     this.setState({
       isLoading: true,
     });
-    const url = `?q=${searchQuery}&page=${currentPage}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`;
+    const url = `?q=${searchQuery}&page=${currentPage}&key=${key}&safesearch=true&image_type=photo&orientation=horizontal&per_page=12`;
     const response = await axios.get(url);
     return response;
   }
@@ -128,7 +129,7 @@ class App extends Component {
         <Searchbar onSubmit={this.handelSubmit} />
         {isLoading && <Loader />}
         {images.length > 0 && <ImageGallery images={images} onClick={this.openModal} />}
-        {noResults && <p>No images found :(</p>}
+        {noResults && <NoResults />}
         {totalPages > 0 && currentPage < totalPages && <Button label="load more" onClick={this.handleLoadMore} />}
         {modalIsOpen && <Modal src={laregeURL} alt={modalAlt} onClick={this.closeModal} />}
       </div>
