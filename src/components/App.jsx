@@ -6,6 +6,7 @@ import Loader from "./Loader/Loader";
 import Error from "./Error/Error";
 import Button from "./Button/Button";
 import css from "./App.module.css";
+import Modal from "./Modal/Modal";
 
 axios.defaults.baseURL = "https://pixabay.com/api/";
 const key = "6950737-29a0d5130824bfea54194711c";
@@ -21,9 +22,13 @@ class App extends Component {
       totalPages: 0,
       noResults: false,
       searchQuery: "",
+      laregeURL: "",
+      modalAlt: "",
+      modalIsOpen: false,
     }
 
     this.handelSubmit = this.handelSubmit.bind(this);
+    this.openModal = this.openModal.bind(this);
   }
 
   handelSubmit = (e) => {
@@ -73,6 +78,33 @@ class App extends Component {
     }));
   }
 
+  openModal = (e) => {
+    const img = e.currentTarget;
+    const large = img.getAttribute("data-large");
+    const alt = img.alt;
+    this.setState({
+      laregeURL: large,
+      modalAlt: alt,
+      modalIsOpen: true,
+    });
+    window.addEventListener("keydown", this.handleKey);
+  }
+
+  closeModal = () => {
+    this.setState({
+      laregeURL: "",
+      modalAlt: "",
+      modalIsOpen: false,
+    });
+    window.removeEventListener("keydown", this.handleKey);
+  }
+
+  handleKey = (e) => {
+    if (e.code === "Escape") {
+      this.closeModal();
+    }
+  }
+
   componentDidUpdate(_, prevState) {
     if (prevState.searchQuery !== this.state.searchQuery) {
       this.setState({
@@ -85,7 +117,7 @@ class App extends Component {
   }
   
   render() {
-    const { images, isLoading, error, totalPages, currentPage, noResults } = this.state;
+    const { images, isLoading, error, totalPages, currentPage, noResults, laregeURL, modalAlt, modalIsOpen } = this.state;
 
     if (error) {
       return (<Error errorMessage={error.message} />);
@@ -95,9 +127,10 @@ class App extends Component {
       <div className={css.App}>
         <Searchbar onSubmit={this.handelSubmit} />
         {isLoading && <Loader />}
-        {images.length > 0 && <ImageGallery images={images} />}
+        {images.length > 0 && <ImageGallery images={images} onClick={this.openModal} />}
         {noResults && <p>No images found :(</p>}
         {totalPages > 0 && currentPage < totalPages && <Button label="load more" onClick={this.handleLoadMore} />}
+        {modalIsOpen && <Modal src={laregeURL} alt={modalAlt} onClick={this.closeModal} />}
       </div>
     );
   }  
