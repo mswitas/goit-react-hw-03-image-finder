@@ -6,6 +6,7 @@ import css from "./ImageGallery.module.css";
 class ImageGallery extends Component {
     static defaultProps = {
         images: [],
+        onClick: () => {},
     }
 
     static propTypes = {
@@ -13,12 +14,12 @@ class ImageGallery extends Component {
     }
 
     render() {
-        const { images } = this.props;
+        const { images, onClick } = this.props;
         return (
             <ul className={css.ImageGallery}>
                 {images.map((image, i) => {
                     return (
-                        <ImageGalleryItem key={i+image.id} src={image.webformatURL} alt={image.tags} />
+                        <ImageGalleryItem key={i+image.id} src={image.webformatURL} alt={image.tags} large={image.largeImageURL} onClick={onClick} />
                     );
                 })}
             </ul>
