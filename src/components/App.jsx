@@ -110,6 +110,7 @@ class App extends Component {
     if (prevState.searchQuery !== this.state.searchQuery) {
       this.setState({
         images: [],
+        currentPage: 1,
       });
       this.addImages();
     } else if (prevState.currentPage !== this.state.currentPage) {
