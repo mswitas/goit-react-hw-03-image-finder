@@ -7,7 +7,7 @@ class Searchbar extends Component {
     }
 
     static propTypes = {
-        onSubmit: func.isRequired,
+        onSubmit: PropTypes.func.isRequired,
     }
 
     render() {
