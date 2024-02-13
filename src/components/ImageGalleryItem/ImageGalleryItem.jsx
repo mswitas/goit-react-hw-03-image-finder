@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import css from "./ImageGalleryItem.module.css";
 
 class ImageGalleryItem extends Component {
     static defaultProps = {
@@ -9,7 +10,7 @@ class ImageGalleryItem extends Component {
     render() {
         const { src, alt } = this.props;
         return (
-            <li className="galleryItem">
+            <li className={css.ImageGalleryItem}>
                 <img src={src} alt={alt} />
             </li>
         )

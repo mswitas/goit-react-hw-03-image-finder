@@ -4,6 +4,8 @@ import axios from "axios";
 import ImageGallery from "./ImageGallery/ImageGallery";
 import Loader from "./Loader/Loader";
 import Error from "./Error/Error";
+import Button from "./Button/Button";
+import css from "./App.module.css";
 
 axios.defaults.baseURL = "https://pixabay.com/api/";
 const key = "6950737-29a0d5130824bfea54194711c";
@@ -13,11 +15,11 @@ class App extends Component {
     super();
     this.state = {
       images: [],
-      totalHits: 0,
       isLoading: false,
       error: "",
       currentPage: 1,
       totalPages: 0,
+      noResults: false,
       searchQuery: "",
     }
 
@@ -31,19 +33,29 @@ class App extends Component {
     this.setState({ searchQuery: searchQuery });
   }
 
-  getImages = async () => {
+  fetchImages = async (searchQuery, currentPage) => {
     this.setState({
       isLoading: true,
     });
-    const { searchQuery, currentPage } = this.state;
     const url = `?q=${searchQuery}&page=${currentPage}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`;
-    try {
-      const { data } = await axios.get(url);
-      this.setState({
-        images: data.hits,
-        totalHits: data.totalHits,
-      });
+    const response = await axios.get(url);
+    return response;
+  }
 
+  addImages = async () => {
+    const { searchQuery, currentPage } = this.state;
+    try {
+      this.setState({
+        isLoading: true,
+      });
+      const { data } = await this.fetchImages(searchQuery, currentPage);
+      const noResults = data.totalHits === 0;
+      this.setState(state => ({
+        images: [...state.images, ...data.hits],
+        totalPages: Math.ceil(data.totalHits / 12),
+        totalHits: data.hits,
+        noResults: noResults,
+      }));
     } catch (error) {
       this.setState({
         error,
@@ -55,25 +67,37 @@ class App extends Component {
     }
   }
 
-  componentDidUpdate(_, prevState) {
-    if (prevState.searchQuery !== this.state.searchQuery) {
-      this.getImages();
-    } 
+  handleLoadMore = () => {
+    this.setState(state => ({
+      currentPage: state.currentPage + 1,
+    }));
   }
 
-
+  componentDidUpdate(_, prevState) {
+    if (prevState.searchQuery !== this.state.searchQuery) {
+      this.setState({
+        images: [],
+      });
+      this.addImages();
+    } else if (prevState.currentPage !== this.state.currentPage) {
+      this.addImages();
+    }
+  }
+  
   render() {
-    const { images, isLoading, error } = this.state;
+    const { images, isLoading, error, totalPages, currentPage, noResults } = this.state;
 
     if (error) {
       return (<Error errorMessage={error.message} />);
     }
     
     return (
-      <div>
+      <div className={css.App}>
         <Searchbar onSubmit={this.handelSubmit} />
         {isLoading && <Loader />}
-        <ImageGallery images={images} />
+        {images.length > 0 && <ImageGallery images={images} />}
+        {noResults && <p>No images found :(</p>}
+        {totalPages > 0 && currentPage < totalPages && <Button label="load more" onClick={this.handleLoadMore} />}
       </div>
     );
   }  
