@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Searchbar from "./Searchbar/Searchbar";
 import axios from "axios";
 import ImageGallery from "./ImageGallery/ImageGallery";
+import Loader from "./Loader/Loader";
+import Error from "./Error/Error";
 
 axios.defaults.baseURL = "https://pixabay.com/api/";
 const key = "6950737-29a0d5130824bfea54194711c";
@@ -15,6 +17,7 @@ class App extends Component {
       isLoading: false,
       error: "",
       currentPage: 1,
+      totalPages: 0,
       searchQuery: "",
     }
 
@@ -60,10 +63,16 @@ class App extends Component {
 
 
   render() {
-    const { images } = this.state;
+    const { images, isLoading, error } = this.state;
+
+    if (error) {
+      return (<Error errorMessage={error.message} />);
+    }
+    
     return (
       <div>
         <Searchbar onSubmit={this.handelSubmit} />
+        {isLoading && <Loader />}
         <ImageGallery images={images} />
       </div>
     );
