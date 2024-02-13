@@ -1,8 +1,13 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 class Error extends Component {
     static defaultProps = {
         errorMessage: "",
+    }
+
+    static propTypes = {
+        errorMessage: PropTypes.string.isRequired,
     }
 
     render() {
