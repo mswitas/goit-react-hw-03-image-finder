@@ -36,7 +36,13 @@ class App extends Component {
     e.preventDefault();
     const form = e.currentTarget;
     const searchQuery = form.elements.search.value;
-    this.setState({ searchQuery: searchQuery });
+    if (searchQuery !== this.state.searchQuery) {
+      this.setState({
+        images: [],
+        currentPage: 1,
+        searchQuery: searchQuery,
+      });
+    }
   }
 
   fetchImages = async (searchQuery, currentPage) => {
@@ -107,13 +113,10 @@ class App extends Component {
   }
 
   componentDidUpdate(_, prevState) {
-    if (prevState.searchQuery !== this.state.searchQuery) {
-      this.setState({
-        images: [],
-        currentPage: 1,
-      });
-      this.addImages();
-    } else if (prevState.currentPage !== this.state.currentPage) {
+    if (
+      prevState.searchQuery !== this.state.searchQuery ||
+      prevState.currentPage !== this.state.currentPage
+    ) {
       this.addImages();
     }
   }
